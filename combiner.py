@@ -36,7 +36,7 @@ class combiner():
         # global variables controlled by turnOnSyst argument
         self.systOn = False
         self.systAcc = 0.10
-        self.systN   = 100*5
+        self.systN   = 20 # 100*5
         self.XforSysts = None
         self.vforSysts = None
         if self.systOn : print 'combiner.__init__ SYSTEMATIC VARIATIONS APPLIED. systAcc,systN',self.systAcc,self.systN
@@ -185,8 +185,6 @@ class combiner():
         doCLs = False # if true, try to do CLs calculation
         x = numpy.array(self.ratioRange)
         if doCLs: xCLs = self.ratioRangeCLs
-        xtitle = 'Br(K+ => pi+,nu,nubar)/'+str(self.AssumedBr)
-        ytitle = '-2*loglikelihood'
 
         # load data, report it, scale it to have same assumed branching fraction, report that,
         # then, if requested, study fitted Br for variations in input parameters
@@ -227,6 +225,8 @@ class combiner():
                 ylims = [0.,0.5] 
                 self.drawIt(x,m2ll,xtitle,ytitle,title,mark='o-',xlims=xlims,ylims=ylims,label=group)
 
+        xtitle = 'Br(K+ => pi+,nu,nubar)/'+str(self.AssumedBr)
+        ytitle = '-2*loglikelihood'
         self.reportGroups(Results)
         title = 'Groups'
         loc = 'best'
@@ -259,6 +259,13 @@ class combiner():
             self.drawIt(x,m2ll,xtitle,ytitle,title+' restrict ranges',mark='-',xlims=[0.5,1.5],ylims=[0.,0.1],label=label)
             M2LL['all_with_syst'] = m2ll
 
+            # add all_with_syst to groups and display all groups
+            gLL['all_with_syst'] = m2ll
+            title = 'Groups and syst'
+            self.drawMany(x,gLL,xtitle,gLL.keys(),title,loc=loc)
+            self.drawMany(x,gLL,xtitle,gLL.keys(),title+' restricted x and y ranges',ylims=[0.,4.],xlims=[0.,2.],loc=loc)
+            self.drawMany(x,gLL,xtitle,gLL.keys(),title+' fanatical x and y ranges',ylims=[0.,0.2],xlims=[0.8,1.2],loc=loc)
+
             self.systOn = False
 
         return
@@ -288,7 +295,7 @@ class combiner():
             else:
                 X = self.XforSysts
                 v = self.vforSysts
-
+   
         like = 0.
         totwt= 0.
         for f,wt in zip(X,v):
