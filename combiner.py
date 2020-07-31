@@ -846,7 +846,10 @@ if __name__ == '__main__' :
         if sys.argv[1].lower()=='draweach': drawEach=True
         if sys.argv[1].lower()=='help' : sys.exit( 'usage: python combiner.py drawEach debug drawToFile turnOnSyst studyVar' )
     if len(sys.argv)>2:
-        debug = int(sys.argv[2])
+        try: 
+            debug = int(sys.argv[2])
+        except ValueError:
+            debug = 0
     if len(sys.argv)>3:
         if sys.argv[3].lower()=='drawtofile' : drawToFile = True
     if len(sys.argv)>4:
