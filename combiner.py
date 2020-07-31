@@ -25,6 +25,7 @@ from scipy.stats import poisson
 class combiner():
     def __init__(self,debug=0,drawEach=True,drawToFile=False,turnOnSyst=False,studyVar=False):
 
+        
         self.debug      = debug
         self.drawEach   = drawEach
         self.drawToFile = drawToFile
@@ -32,24 +33,21 @@ class combiner():
         self.studyVar   = studyVar
         print 'combiner.__init__ debug',self.debug,'drawEach',self.drawEach,'drawToFile',self.drawToFile,'turnOnSyst',self.turnOnSyst,'studyVar',self.studyVar
 
+        # global variables controlled by turnOnSyst argument
         self.systOn = False
         self.systAcc = 0.10
         self.systN   = 100*5
         self.XforSysts = None
         self.vforSysts = None
         if self.systOn : print 'combiner.__init__ SYSTEMATIC VARIATIONS APPLIED. systAcc,systN',self.systAcc,self.systN
-        
-        self.AssumedBr = self.AssumedBR = 1.73e-10 # PRD79, 092004 (2009) Table VIII
 
+        # init of assumed branching fraction
+        self.AssumedBr = self.AssumedBR = 1.73e-10 # PRD79, 092004 (2009) Table VIII
         print 'combiner.__init__ self.AssumedBr',self.AssumedBr,' *****************'
 
         self.Groups = None
         self.dataSets = None
 
-        self.factorial = {}
-        for i in range(20):
-            self.factorial[i] = math.factorial(i)
-        
         # define the binning to scan for the ratio wrt the assumed BR
         r = numpy.arange(0.,0.1,0.05)
         r = numpy.append( r, numpy.arange(0.1,0.8,0.05)  )
@@ -65,12 +63,13 @@ class combiner():
         r = numpy.unique( numpy.sort(r) )
         self.ratioRange = r
 
-        # define binning for CLs scans
+        # define binning for CLs scans (only used by if CLs calculated)
         r = numpy.arange(0.,10.,0.5)
         r = numpy.arange(0.,3.,0.01)
         self.ratioRangeCLs = numpy.unique( numpy.sort(r) )
         print 'combiner.__init__ # bins in self.ratioRange',len(self.ratioRange),'self.ratioRangeCLs',len(self.ratioRangeCLs)
 
+        # output directory for figures
         self.figDir = 'FIGURES/'
         
         print 'combiner.__init__ Did something'
