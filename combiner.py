@@ -226,7 +226,7 @@ class combiner():
                 title  = '{0} minimized at {1:.2f} at BF {2:.2e}'.format(group,xatmin,xatmin*self.AssumedBR)
                 xlims  = [ max(0.,xatmin-0.5),min(10.,xatmin+0.5)]
                 ylims = [0.,0.5] 
-                self.drawIt(x,m2ll,xtitle,ytitle,title,mark='o-',xlims=xlims,ylims=ylims)
+                self.drawIt(x,m2ll,xtitle,ytitle,title,mark='o-',xlims=xlims,ylims=ylims,label=group)
 
         self.reportGroups(Results)
         title = 'Groups'
@@ -253,10 +253,11 @@ class combiner():
             xatmin = x[numpy.argmin(m2ll)]
             Bratmin = xatmin*self.AssumedBr
             if debug>0: print 'combiner.main allcands minimized at',xatmin
-            title = '-2*loglikelihood with systematics minimized at {0:.3f} BF={1:.3e} systN={2}'.format(xatmin,Bratmin,self.systN)
-            print 'combiner.main',title
-            self.drawIt(x,m2ll,xtitle,ytitle,title,mark='-')
-            self.drawIt(x,m2ll,xtitle,ytitle,title+' restrict ranges',mark='-',xlims=[0.5,1.5],ylims=[0.,0.1])
+            title = '-2*loglikelihood with systematics included'
+            label = 'Minimum at {0:.3f} BF={1:.3e} systN={2}'.format(xatmin,Bratmin,self.systN)
+            print 'combiner.main',title,label
+            self.drawIt(x,m2ll,xtitle,ytitle,title,mark='-',label=label)
+            self.drawIt(x,m2ll,xtitle,ytitle,title+' restrict ranges',mark='-',xlims=[0.5,1.5],ylims=[0.,0.1],label=label)
             M2LL['all_with_syst'] = m2ll
 
             self.systOn = False
@@ -739,7 +740,7 @@ class combiner():
             for old in r[new]:
                 if old in filename : filename = filename.replace(old,new)
         return filename
-    def drawIt(self,x,y,xtitle,ytitle,title,ylog=False,xlims=None,ylims=None,mark='o-'):
+    def drawIt(self,x,y,xtitle,ytitle,title,ylog=False,xlims=None,ylims=None,mark='o-',label=''):
         '''
         draw graph defined by x,y
 
@@ -750,12 +751,14 @@ class combiner():
 
         X = numpy.array(x)
         Y = numpy.array(y)
-        plt.plot(X,Y,mark)
+        plt.plot(X,Y,mark,label=label)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
         if ylog : plt.yscale('log')
         if xlims is not None: plt.xlim(xlims)
         if ylims is not None: plt.ylim(ylims)
+
+        plt.legend(loc='best')
 
         if self.drawToFile:
             fn = self.titleAsFilename(title)
