@@ -670,6 +670,7 @@ class combiner():
         report content of self.Groups with fitted BR and Joss's fitted BR
         '''
         if self.Groups is None: sys.exit('combiner.reportGroups ERROR self.Groups not initialized')
+        print '\nColumn labels: BF=Branching Fraction that minimizes 2loglike(group), K074=BF from technote K074, BF/K = ratio BF and K074'
         print '{0:^12} {1:^12} {2:^6} {3:<15} | {4}'.format('BF(1e-10)','K074(1e-10)','BF/K','Group name','data sets')
         for group in sorted(self.Groups.keys()):
             mine = Results[group]/1.e-10
