@@ -189,7 +189,7 @@ class combiner():
         xtitle = 'Br(K+ => pi+,nu,nubar)/'+str(self.AssumedBr)
         ytitle = '-2*loglikelihood'
 
-        # load data, report it, correct it to have same assumed branching fraction, report that,
+        # load data, report it, scale it to have same assumed branching fraction, report that,
         # then, if requested, study fitted Br for variations in input parameters
         # then calculate m2ll = -2*loglike for each dataset
         cands = self.loadData()
@@ -201,7 +201,8 @@ class combiner():
             self.studyVariations(cands,keyw='All pnn2',centralValue=5.11/1.73)
             self.studyVariations(cands,keyw='E949 pnn2',centralValue=7.89/1.73)
             
-        # group candidates, calculate minimum of chi2, test function X, report results by group
+        # group candidates, calculate minimum of chi2, test function X, collect and report results by group
+        # optionally draw -2loglike for each group
         groupCands = {}
         for group in sorted(self.Groups.keys()):
             groupCands[group] = self.collate(cands,keyw=group)[group]
@@ -230,12 +231,12 @@ class combiner():
         self.reportGroups(Results)
         title = 'Groups'
         loc = 'best'
-        calculateCLs = doCLs
-        if calculateCLs: 
+
+        if doCLs: 
             self.getCLs(groupCands,group='all')
             self.drawMany(xCLs,gX,xtitle,gX.keys(),title,loc=loc)
 
-        
+        # draw -2LL vs Br/nominal for all groups on diffferent scales
         self.drawMany(x,gLL,xtitle,gLL.keys(),title,loc=loc)
         self.drawMany(x,gLL,xtitle,gLL.keys(),title+' restricted x and y ranges',ylims=[0.,4.],xlims=[0.,2.],loc=loc)
         self.drawMany(x,gLL,xtitle,gLL.keys(),title+' fanatical x and y ranges',ylims=[0.,0.2],xlims=[0.8,1.2],loc=loc)
@@ -413,33 +414,6 @@ class combiner():
         if type(A) is list : A = numpy.array( A )
         A.shape = (n1,n2)
         return A
-    def OLD_m2loglike(self,cand,RATIO):
-        '''
-        calculate -2 * log likelihood from NK,Atot,[s/b], given ratio = BR/self.AssumedBr
-        optionally include averaging over systematic variation of global acceptance 
-        '''
-        if type(cand['NK']) is list:
-            NKlist = cand['NK']
-            Atotlist = cand['Atot']
-        else:
-            NKlist = [cand['NK']]
-            Atotlist = [cand['Atot']]
-        soverb = cand['soverb']
-
-        v = [1.]
-        if self.systOn:
-            v = numpy.random.normal(1.,self.systAcc,self.systN)
-
-        like = 0.
-        for f in v:
-            ratio = f*RATIO
-            for NK,Atot in zip(NKlist,Atotlist):
-                like += ratio*self.AssumedBr*NK*Atot
-            for x in soverb:
-                like -= math.log(1. + ratio*x)
-        like = like/float(len(v))
-        like *= 2.
-        return like
     def fillX(self,cands,ratRange=None):
         '''
         loop over datasets add array of test function X for ratio in ratRange to dict cands
