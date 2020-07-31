@@ -245,7 +245,7 @@ class combiner():
         # systematics study : combined candidates and likelihood
         if self.turnOnSyst:
             self.systOn = True
-            if self.systOn : print 'combiner.main Systematics calculation enabled for combined likelihood.',self.reportSyst()
+            if self.systOn : print 'combiner.main Now produce combined loglikelihood with systematics. ',self.reportSyst()
             allcands = self.collate(cands)
             allcands = self.fillM2LL(allcands)
             m2ll = numpy.array(allcands['all']['m2ll'])
