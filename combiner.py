@@ -3,6 +3,7 @@
 eventually combine E949/E787 with NA62 for Br(K+ => pi+,nu,nubar)
 20191023
 20191205 clean up. copy original to old_combiner.py and remove unused code
+20200731 move to newE949 repo, more cleanup
 '''
 import math
 import sys,os
@@ -182,8 +183,9 @@ class combiner():
         '''
         debug = self.debug
         drawEach = self.drawEach
+        doCLs = False # if true, try to do CLs calculation
         x = numpy.array(self.ratioRange)
-        xCLs = self.ratioRangeCLs
+        if doCLs: xCLs = self.ratioRangeCLs
         xtitle = 'Br(K+ => pi+,nu,nubar)/'+str(self.AssumedBr)
         ytitle = '-2*loglikelihood'
 
@@ -206,14 +208,14 @@ class combiner():
             if debug>0: print 'combiner.main group',group,'groupCands[group].keys()',groupCands[group].keys(),'groupCands[group]',groupCands[group]
         if debug>0: print 'combine.main groupCands.keys()',groupCands.keys()
         groupCands = self.fillM2LL(groupCands)
-        groupCands = self.fillX(groupCands,ratRange=xCLs)
+        if doCLs: groupCands = self.fillX(groupCands,ratRange=xCLs)
         Results = {}
         gLL = {}
-        gX  = {}
+        if doCLs: gX  = {}
         for group in sorted(self.Groups.keys()):
             m2ll = numpy.array(groupCands[group]['m2ll'])
             gLL[group] = m2ll = m2ll-min(m2ll)
-            gX[group] = groupCands[group]['X']
+            if doCLs: gX[group] = groupCands[group]['X']
             xatmin = x[numpy.argmin(m2ll)]
             Results[group] = xatmin*self.AssumedBR
             if debug>0: print 'combine.main {0} minimized at BF {1:.2e}'.format(group,xatmin*self.AssumedBR)
@@ -228,7 +230,7 @@ class combiner():
         self.reportGroups(Results)
         title = 'Groups'
         loc = 'best'
-        calculateCLs = False
+        calculateCLs = doCLs
         if calculateCLs: 
             self.getCLs(groupCands,group='all')
             self.drawMany(xCLs,gX,xtitle,gX.keys(),title,loc=loc)
