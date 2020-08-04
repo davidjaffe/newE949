@@ -40,7 +40,7 @@ class combiner():
         self.XforSysts = None
         self.vforSysts = None
         if self.systOn : print 'combiner.__init__ SYSTEMATIC VARIATIONS APPLIED. systAcc,systN',self.systAcc,self.systN
-
+            
         # init of assumed branching fraction
         self.AssumedBr = self.AssumedBR = 1.73e-10 # PRD79, 092004 (2009) Table VIII
         print 'combiner.__init__ self.AssumedBr',self.AssumedBr,' *****************'
